@@ -1,11 +1,15 @@
-import { Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
 import { Participant } from '../../components/Participant'
 
 import { styles } from './styles'
 
+const PARTICIPANTS = ['Andres', 'Rodrigo', 'Ana', 'Mayke', 'Diego']
+
 export function Home() {
   function handleAddParticipant() {}
+
+  function handleRemoveParticipant(name: string) {}
 
   return (
     <View style={styles.container}>
@@ -24,8 +28,20 @@ export function Home() {
         </TouchableOpacity>
       </View>
 
-      <Participant name="Andres" />
-      <Participant name="Ana" />
+      <FlatList
+        data={PARTICIPANTS}
+        keyExtractor={(item) => item}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={() => (
+          <Text style={styles.listEmpty}>Ninguém chegou no evento.</Text>
+        )}
+        renderItem={({ item }) => (
+          <Participant
+            name={item}
+            onRemove={() => handleRemoveParticipant('Andres')}
+          />
+        )}
+      />
     </View>
   )
 }
