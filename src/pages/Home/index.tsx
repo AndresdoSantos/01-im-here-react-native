@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react'
 import {
   Alert,
   FlatList,
@@ -11,30 +12,40 @@ import { Participant } from '../../components/Participant'
 
 import { styles } from './styles'
 
-const PARTICIPANTS = ['Andres', 'Rodrigo', 'Ana', 'Mayke', 'Diego']
-
 export function Home() {
+  const [participantInput, setParticipantInput] = useState('')
+  const [participants, setParticipants] = useState<string[]>([])
+
   function handleAddParticipant() {
-    if (PARTICIPANTS.includes('Andres')) {
-      return Alert.alert(
-        'Participante já existe',
-        'Já existe um participante na lista com esse nome.',
-      )
-    }
+    setParticipants((state) => {
+      if (state.includes(participantInput)) {
+        Alert.alert(
+          'Participante já existe',
+          'Já existe um participante na lista com esse nome.',
+        )
+
+        return state
+      }
+
+      return [...state, participantInput]
+    })
+
+    setParticipantInput('')
   }
 
-  function handleRemoveParticipant(name: string) {
+  const handleRemoveParticipant = useCallback((name: string) => {
     return Alert.alert('Remover', 'Deseja mesmo remover esse participante?', [
       {
         text: 'Sim',
-        onPress: () => Alert.alert('Deletado!'),
+        onPress: () =>
+          setParticipants((state) => state.filter((item) => item !== name)),
       },
       {
         text: 'Não',
         style: 'cancel',
       },
     ])
-  }
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -46,6 +57,8 @@ export function Home() {
           placeholder="Nome do participante"
           placeholderTextColor="#6B6B6B"
           style={styles.input}
+          onChangeText={setParticipantInput}
+          value={participantInput}
         />
 
         <TouchableOpacity style={styles.button} onPress={handleAddParticipant}>
@@ -54,7 +67,7 @@ export function Home() {
       </View>
 
       <FlatList
-        data={PARTICIPANTS}
+        data={participants}
         keyExtractor={(item) => item}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={() => (
